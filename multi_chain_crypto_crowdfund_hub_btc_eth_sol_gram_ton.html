@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Chain Crypto Crowdfund Hub — BTC • ETH • SOL • GRAM/TON</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #060913;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .grad-btc {
+      background: linear-gradient(135deg, #f7931a 0%, #ea580c 100%);
+    }
+    .grad-eth {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #3b82f6 100%);
+    }
+    .grad-sol {
+      background: linear-gradient(135deg, #9945FF 0%, #14F195 100%);
+    }
+    .grad-gram {
+      background: linear-gradient(135deg, #0098EA 0%, #38bdf8 100%);
+    }
+    .pulse-ring {
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-indigo-500 selection:text-white pb-16">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 border border-white/20 shadow-2xl text-sm font-medium text-white">
+    <span id="toast-dot" class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+    <span id="toast-msg">Copied to clipboard</span>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#060913]/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div id="header-logo" class="w-10 h-10 rounded-xl grad-btc flex items-center justify-center shadow-lg font-extrabold text-xl text-white transition-all">
+          ₿
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg tracking-tight text-white">Multi-Chain Crypto Funding Hub</h1>
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-ring"></span>
+              4 Chains Live
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Bitcoin • Ethereum (EVM) • Solana • GRAM &amp; TON</p>
+        </div>
+      </div>
+
+      <!-- View Switcher Tabs -->
+      <nav class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-white/10 text-xs sm:text-sm">
+        <button id="tab-btn-widget" class="px-3 py-1.5 rounded-lg font-semibold transition-all bg-white text-slate-950 shadow">
+          Donate Crypto
+        </button>
+        <button id="tab-btn-directory" class="px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white">
+          All 4 Wallets
+        </button>
+        <button id="tab-btn-promo" class="px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white">
+          Viral Share Kit
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+
+    <!-- Multi-Chain Network Selector Bar -->
+    <section class="mb-6">
+      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center justify-between">
+        <span>Select Blockchain Network to Contribute:</span>
+        <button id="refresh-all-btn" class="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-medium">
+          <span>↻ Sync All Live Balances</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- BTC Selector Card -->
+        <button id="chain-card-BTC" data-chain="BTC" class="chain-selector-btn text-left p-3.5 rounded-2xl border-2 border-orange-500 bg-orange-500/10 transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl grad-btc flex items-center justify-center font-bold text-white shrink-0">₿</div>
+            <div class="truncate">
+              <div class="font-bold text-sm text-white">Bitcoin</div>
+              <div id="mini-bal-BTC" class="text-xs font-mono text-orange-300 truncate">0.000000 BTC</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-orange-500/20 text-orange-300 border border-orange-500/30">BTC</span>
+        </button>
+
+        <!-- ETH Selector Card -->
+        <button id="chain-card-ETH" data-chain="ETH" class="chain-selector-btn text-left p-3.5 rounded-2xl border border-white/10 bg-slate-900/70 hover:border-indigo-500/50 transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl grad-eth flex items-center justify-center font-bold text-white shrink-0">Ξ</div>
+            <div class="truncate">
+              <div class="font-bold text-sm text-white">Ethereum</div>
+              <div id="mini-bal-ETH" class="text-xs font-mono text-indigo-300 truncate">0.000000 ETH</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">ERC20</span>
+        </button>
+
+        <!-- SOL Selector Card -->
+        <button id="chain-card-SOL" data-chain="SOL" class="chain-selector-btn text-left p-3.5 rounded-2xl border border-white/10 bg-slate-900/70 hover:border-emerald-400/50 transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl grad-sol flex items-center justify-center font-bold text-slate-950 shrink-0">◎</div>
+            <div class="truncate">
+              <div class="font-bold text-sm text-white">Solana</div>
+              <div id="mini-bal-SOL" class="text-xs font-mono text-emerald-300 truncate">0.0000 SOL</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">SPL</span>
+        </button>
+
+        <!-- GRAM / TON Selector Card -->
+        <button id="chain-card-GRAM" data-chain="GRAM" class="chain-selector-btn text-left p-3.5 rounded-2xl border border-white/10 bg-slate-900/70 hover:border-sky-400/50 transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl grad-gram flex items-center justify-center font-bold text-white shrink-0">💎</div>
+            <div class="truncate">
+              <div class="font-bold text-sm text-white">GRAM / TON</div>
+              <div id="mini-bal-GRAM" class="text-xs font-mono text-sky-300 truncate">0.00 GRAM</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/30">TON</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Active Chain Campaign Banner -->
+    <section class="glass-card rounded-2xl p-5 sm:p-6 mb-6 relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        <div>
+          <span id="active-chain-badge" class="text-xs uppercase tracking-wider font-semibold text-orange-400">Bitcoin Mainnet • Native SegWit (Bech32)</span>
+          <h2 id="active-chain-headline" class="text-xl sm:text-2xl font-extrabold text-white mt-0.5">Road to 1.00000000 BTC</h2>
+          <p id="active-chain-subtext" class="text-sm text-slate-400 mt-1">Direct peer-to-peer Bitcoin contributions. Every satoshi is verified on-chain.</p>
+        </div>
+
+        <div class="flex items-center gap-3 self-start md:self-center bg-slate-900/90 border border-white/10 px-4 py-2.5 rounded-xl">
+          <div>
+            <div id="active-balance-label" class="text-[11px] text-slate-400 uppercase font-medium">Current BTC Balance</div>
+            <div class="flex items-baseline gap-2">
+              <span id="active-balance-value" class="font-mono font-bold text-lg sm:text-xl text-orange-400">0.00000000 BTC</span>
+              <span id="active-balance-sub" class="text-xs text-slate-400 font-mono">(~$0.00)</span>
+            </div>
+          </div>
+          <button id="refresh-balance-btn" title="Refresh Blockchain" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition text-xs font-medium flex items-center gap-1">
+            <span>↻</span>
+            <span class="hidden sm:inline">Sync</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full bg-slate-900 h-4 rounded-full overflow-hidden border border-white/10 p-0.5">
+        <div id="goal-progress-bar" class="grad-btc h-full rounded-full transition-all duration-700" style="width: 1%"></div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 mt-2.5 gap-2">
+        <div class="flex items-center gap-4">
+          <span>Goal Progress: <strong id="progress-percent" class="text-white font-mono">0.0000%</strong> of <span id="goal-target-text" class="text-white font-mono">1.00 BTC</span></span>
+          <span>Explorer: <a id="explorer-link" href="https://mempool.space/address/bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:underline font-mono">mempool.space ↗</a></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span>Market Price: <strong id="market-price-display" class="text-emerald-400 font-mono">$68,500</strong></span>
+          <span id="api-status-text" class="text-[11px] text-slate-500">(on-chain live)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 1: INTERACTIVE DONATION WIDGET -->
+    <div id="view-widget" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Payment Builder (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="glass-card rounded-2xl p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 class="font-bold text-base sm:text-lg text-white flex items-center gap-2">
+              <span id="step-dot" class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+              <span id="step-title">Select Contribution Amount (BTC)</span>
+            </h3>
+
+            <!-- Optional sub-toggle for TON/GRAM -->
+            <div id="ton-subtoggle" class="hidden items-center bg-slate-900 p-1 rounded-xl border border-white/10 text-xs">
+              <button id="subbtn-gram" class="px-2.5 py-1 rounded-lg font-bold bg-[#0098EA] text-white transition">GRAM Jetton</button>
+              <button id="subbtn-ton" class="px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition">Native TON</button>
+            </div>
+          </div>
+
+          <!-- Preset Tiers Grid -->
+          <div id="tiers-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-5">
+            <button data-idx="0" class="tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition"></button>
+            <button data-idx="1" class="tier-btn text-left p-3 rounded-xl border border-orange-500 bg-orange-500/10 transition"></button>
+            <button data-idx="2" class="tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition"></button>
+            <button data-idx="3" class="tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition"></button>
+            <button data-idx="4" class="tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition"></button>
+            <button data-idx="5" class="tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition"></button>
+          </div>
+
+          <!-- Custom Amount & Memo / Note -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <label for="input-custom-amount" id="custom-amount-label" class="block text-xs font-medium text-slate-300 mb-1.5">Custom Amount (BTC)</label>
+              <div class="relative">
+                <input id="input-custom-amount" type="number" step="any" min="0" value="0.001" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-white/40" />
+                <span id="usd-estimate-badge" class="absolute right-3 top-2.5 text-xs font-mono text-slate-400">~$68.50</span>
+              </div>
+            </div>
+            <div>
+              <label for="input-donor-memo" class="block text-xs font-medium text-slate-300 mb-1.5">Message / Memo (Optional)</label>
+              <input id="input-donor-memo" type="text" placeholder="e.g., From @alex — keep building!" maxlength="60" class="w-full bg-slate-900 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-white/40" />
+            </div>
+          </div>
+
+          <!-- Recipient Address Box -->
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-white/10">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+              <span id="address-network-label">Recipient Address (Bitcoin Mainnet • Bech32)</span>
+              <span class="text-emerald-400 font-medium">✓ Verified</span>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+              <code id="active-address-code" class="font-mono text-xs sm:text-sm text-amber-300 break-all select-all bg-slate-900/90 px-3 py-2 rounded-lg border border-white/5 flex-1">bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8</code>
+              <button id="copy-address-btn" class="grad-btc hover:opacity-95 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-lg transition shadow-lg shrink-0">
+                Copy Address
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4">
+            <a id="primary-wallet-link" href="bitcoin:bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8?amount=0.001" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-white text-slate-950 hover:bg-slate-200 font-bold text-xs sm:text-sm transition shadow">
+              <span id="primary-wallet-btn-text">⚡ Open in Wallet</span>
+            </a>
+            <button id="web3-browser-btn" class="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs sm:text-sm border border-white/10 transition">
+              <span id="web3-browser-btn-text">🌐 Browser Wallet</span>
+            </button>
+            <button id="copy-uri-btn" class="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm border border-white/10 transition">
+              <span>🔗 Copy Payment URI</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Guide for Selected Network -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6">
+          <h3 id="guide-heading" class="font-bold text-base text-white mb-3">Supported Wallets &amp; Networks</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-white/5">
+              <div id="guide-1-title" class="font-bold text-orange-400 mb-1">1. Recommended Wallets</div>
+              <p id="guide-1-body" class="text-slate-400 leading-relaxed">BlueWallet, Trust Wallet, Exodus, Ledger, Trezor, Cash App, or Strike.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-white/5">
+              <div id="guide-2-title" class="font-bold text-orange-400 mb-1">2. Supported Tokens</div>
+              <p id="guide-2-body" class="text-slate-400 leading-relaxed">Native BTC on Bitcoin Mainnet (Bech32 / Native SegWit).</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/70 border border-white/5">
+              <div id="guide-3-title" class="font-bold text-orange-400 mb-1">3. Instant Verification</div>
+              <p id="guide-3-body" class="text-slate-400 leading-relaxed">All transfers appear in real time on mempool.space and update the progress bar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Dynamic QR Code & Supporter Wall (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col items-center text-center">
+          <div id="qr-title-badge" class="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-1">BIP-21 Payment QR Code</div>
+          <p id="qr-subtitle-text" class="text-xs text-slate-400 mb-4">Scan with your mobile wallet app to pre-fill address &amp; amount</p>
+
+          <!-- QR Container -->
+          <div class="bg-white p-4 rounded-2xl shadow-xl border-4 border-white/20 mb-4">
+            <div id="qrcode-box" class="w-48 h-48 flex items-center justify-center"></div>
+          </div>
+
+          <div class="w-full bg-slate-900/80 rounded-xl p-3 border border-white/10 text-left mb-4">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium mb-1">
+              <span>Standard Payment URI:</span>
+              <span id="uri-protocol-tag" class="font-mono text-orange-400">bitcoin:</span>
+            </div>
+            <div id="uri-preview-box" class="font-mono text-xs text-slate-200 break-all">bitcoin:bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8?amount=0.001</div>
+          </div>
+
+          <!-- Supporter Wall Input -->
+          <div class="w-full pt-3 border-t border-white/10">
+            <p class="text-xs text-slate-400 mb-2.5">Sent a transfer on any chain? Leave your mark on the supporter wall:</p>
+            <div class="flex gap-2">
+              <input id="supporter-name-input" type="text" placeholder="Your name, .eth, .sol, or @handle" maxlength="32" class="flex-1 bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40" />
+              <button id="add-pledge-btn" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition shrink-0">
+                I Sent Crypto!
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supporter Feed -->
+        <div class="glass-card rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-bold text-sm text-white">Multi-Chain Supporter Wall</h4>
+            <span class="text-[11px] text-slate-400">BTC • ETH • SOL • GRAM</span>
+          </div>
+          <div id="supporters-list" class="space-y-2.5 max-h-56 overflow-y-auto pr-1 text-xs"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: ALL 4 WALLETS QUICK DIRECTORY -->
+    <div id="view-directory" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6">
+        <h3 class="text-lg sm:text-xl font-bold text-white">All Verified Official Addresses (One-Click Copy)</h3>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Prefer copying the raw wallet address directly? Here are all 4 verified addresses across Bitcoin, Ethereum (EVM), Solana, and TON/GRAM.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          <!-- BTC Box -->
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-orange-500/30 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-orange-400 flex items-center gap-2">₿ Bitcoin (BTC Mainnet)</span>
+                <span class="text-[11px] font-mono text-slate-400">Native SegWit / Bech32</span>
+              </div>
+              <code class="block font-mono text-xs text-slate-200 break-all bg-slate-950 p-3 rounded-xl border border-white/5">bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8</code>
+            </div>
+            <div class="flex gap-2">
+              <button data-raw-copy="bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8" data-label="BTC" class="dir-copy-btn flex-1 py-2 rounded-xl grad-btc text-white font-semibold text-xs">Copy BTC Address</button>
+              <button data-select-chain="BTC" class="dir-open-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">QR &amp; Widget →</button>
+            </div>
+          </div>
+
+          <!-- ETH Box -->
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-indigo-400 flex items-center gap-2">Ξ Ethereum &amp; EVM (ETH / USDT / USDC)</span>
+                <span class="text-[11px] font-mono text-slate-400">Mainnet • Base • Arbitrum</span>
+              </div>
+              <code class="block font-mono text-xs text-slate-200 break-all bg-slate-950 p-3 rounded-xl border border-white/5">0xcF5a2FBB514d8410398534E4feaA33aa57b3c006</code>
+            </div>
+            <div class="flex gap-2">
+              <button data-raw-copy="0xcF5a2FBB514d8410398534E4feaA33aa57b3c006" data-label="ETH" class="dir-copy-btn flex-1 py-2 rounded-xl grad-eth text-white font-semibold text-xs">Copy ETH Address</button>
+              <button data-select-chain="ETH" class="dir-open-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">QR &amp; Widget →</button>
+            </div>
+          </div>
+
+          <!-- SOL Box -->
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/30 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-emerald-400 flex items-center gap-2">◎ Solana (SOL &amp; SPL USDC)</span>
+                <span class="text-[11px] font-mono text-slate-400">Solana Mainnet-Beta</span>
+              </div>
+              <code class="block font-mono text-xs text-slate-200 break-all bg-slate-950 p-3 rounded-xl border border-white/5">9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d</code>
+            </div>
+            <div class="flex gap-2">
+              <button data-raw-copy="9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d" data-label="SOL" class="dir-copy-btn flex-1 py-2 rounded-xl grad-sol text-slate-950 font-bold text-xs">Copy SOL Address</button>
+              <button data-select-chain="SOL" class="dir-open-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">QR &amp; Widget →</button>
+            </div>
+          </div>
+
+          <!-- GRAM / TON Box -->
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-sky-500/30 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-sm text-sky-400 flex items-center gap-2">💎 GRAM &amp; Toncoin (TON Mainnet)</span>
+                <span class="text-[11px] font-mono text-slate-400">TON Jetton &amp; Native</span>
+              </div>
+              <code class="block font-mono text-xs text-slate-200 break-all bg-slate-950 p-3 rounded-xl border border-white/5">UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3</code>
+            </div>
+            <div class="flex gap-2">
+              <button data-raw-copy="UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3" data-label="GRAM/TON" class="dir-copy-btn flex-1 py-2 rounded-xl grad-gram text-white font-semibold text-xs">Copy TON/GRAM Address</button>
+              <button data-select-chain="GRAM" class="dir-open-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">QR &amp; Widget →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: MULTI-CHAIN VIRAL SHARE KIT -->
+    <div id="view-promo" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 sm:p-6">
+        <div class="max-w-3xl">
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Multi-Chain Viral Kit</span>
+          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">Share All 4 Chains in One Click</h3>
+          <p class="text-sm text-slate-400 mt-1">
+            By accepting Bitcoin, Ethereum, Solana, and GRAM/TON in one place, anyone in crypto can contribute using whichever chain has the lowest fees or sits in their wallet right now.
+          </p>
+        </div>
+
+        <!-- Direct 1-Click Share Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+          <a id="share-tg-link" href="https://t.me/share/url?url=https://startling-seahorse-45cf58.netlify.app" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2.5 p-3.5 rounded-xl bg-[#24A1DE] hover:opacity-95 text-white font-semibold text-sm transition shadow">
+            <span>✈️ Share on Telegram</span>
+          </a>
+          <a id="share-x-link" href="https://twitter.com/intent/tweet?text=Multi-Chain%20Crowdfund" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2.5 p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/15 text-white font-semibold text-sm transition shadow">
+            <span>𝕏 Post on X (Twitter)</span>
+          </a>
+          <a id="share-reddit-link" href="https://www.reddit.com/submit?url=https://startling-seahorse-45cf58.netlify.app&title=Open%20Multi-Chain%20Crypto%20Experiment" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2.5 p-3.5 rounded-xl bg-[#FF4500] hover:opacity-95 text-white font-semibold text-sm transition shadow">
+            <span>👽 Share on Reddit</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Copyable Multi-Chain Templates -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-emerald-400 uppercase">Template 1 • Global Multi-Chain Post (EN)</span>
+              <span class="text-[11px] text-slate-400">X / Reddit / Nostr / Farcaster</span>
+            </div>
+            <pre id="tpl-en" class="whitespace-pre-wrap font-sans text-xs text-slate-200 bg-slate-900/90 p-3.5 rounded-xl border border-white/10 leading-relaxed">⚡ Open Multi-Chain Crypto Crowdfund Experiment!
+
+Testing which blockchain community is the strongest &amp; fastest — Bitcoin, Ethereum, Solana, or TON/GRAM! Every micro-transfer is tracked live on-chain:
+
+🌐 Live Multi-Chain Tracker &amp; QR Hub:
+https://startling-seahorse-45cf58.netlify.app
+
+₿ BTC: bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8
+Ξ ETH / Base / Arb: 0xcF5a2FBB514d8410398534E4feaA33aa57b3c006
+◎ SOL: 9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d
+💎 GRAM / TON: UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3
+
+Drop a few sats, gwei, lamports, or GRAM and represent your chain! 🚀 #Bitcoin #Ethereum #Solana #TON #GRAM</pre>
+          </div>
+          <button data-copy-target="tpl-en" class="copy-tpl-btn mt-3 w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm transition">
+            Copy English Multi-Chain Post
+          </button>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-sky-400 uppercase">Template 2 • Мультичейн-пост для Telegram и СНГ (RU)</span>
+              <span class="text-[11px] text-slate-400">Telegram / Shorts / TikTok / Чаты</span>
+            </div>
+            <pre id="tpl-ru" class="whitespace-pre-wrap font-sans text-xs text-slate-200 bg-slate-900/90 p-3.5 rounded-xl border border-white/10 leading-relaxed">⚡ Запускаю открытый мультичейн-эксперимент: BTC vs ETH vs SOL vs GRAM/TON!
+
+Проверим, какое крипто-комьюнити самое активное. Все балансы и прогресс обновляются в реальном времени напрямую из блокчейнов:
+
+🌐 Живой трекер и QR-виджет:
+https://startling-seahorse-45cf58.netlify.app
+
+₿ Bitcoin: bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8
+Ξ Ethereum (EVM / L2): 0xcF5a2FBB514d8410398534E4feaA33aa57b3c006
+◎ Solana: 9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d
+💎 GRAM / TON: UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3
+
+Поддержите любимую сеть любой суммой и оставьте свой ник на доске почета! 🚀</pre>
+          </div>
+          <button data-copy-target="tpl-ru" class="copy-tpl-btn mt-3 w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs sm:text-sm transition">
+            Copy Russian Multi-Chain Post
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const LIVE_SITE_URL = 'https://startling-seahorse-45cf58.netlify.app';
+    const GRAM_JETTON_MASTER = 'EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH5ORmG_O';
+
+    const CHAINS = {
+      BTC: {
+        id: 'BTC',
+        name: 'Bitcoin',
+        symbol: 'BTC',
+        icon: '₿',
+        address: 'bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8',
+        badge: 'Bitcoin Mainnet • Native SegWit (Bech32)',
+        headline: 'Road to 1.00000000 BTC (₿)',
+        subtext: 'Direct peer-to-peer Bitcoin contributions. Every satoshi is verified on-chain via mempool.space.',
+        goal: 1.0,
+        defaultAmount: '0.001',
+        gradClass: 'grad-btc',
+        accentText: 'text-orange-400',
+        borderActive: 'border-orange-500 bg-orange-500/10',
+        explorerName: 'mempool.space ↗',
+        explorerUrl: 'https://mempool.space/address/bc1qjjdmccswjluyekct04fughdr5keyxfk4t50wu8',
+        qrTitle: 'BIP-21 Bitcoin Payment QR',
+        qrSubtitle: 'Scan with BlueWallet, Trust, Exodus, Ledger, Cash App, or Strike',
+        protocolTag: 'bitcoin:',
+        primaryBtnText: '⚡ Open in BTC Wallet',
+        web3BtnText: '🔍 View on Mempool',
+        guide1: ['1. Recommended Wallets', 'BlueWallet, Trust Wallet, Exodus, Ledger, Trezor, Cash App, or Strike.'],
+        guide2: ['2. Network Format', 'Native BTC on Bitcoin Mainnet (Bech32 address starting with bc1q).'],
+        guide3: ['3. Instant Verification', 'All transfers appear in real time in the mempool and update the progress bar.'],
+        tiers: [
+          { title: '☕ Buy a Coffee', amount: '0.0001', sub: '10,000 sats' },
+          { title: '⚡ Booster (Popular)', amount: '0.001', sub: '100,000 sats' },
+          { title: '🚀 Supporter', amount: '0.005', sub: '500,000 sats' },
+          { title: '💎 1% of Goal', amount: '0.01', sub: '1,000,000 sats' },
+          { title: '🐋 Whale Partner', amount: '0.1', sub: '10,000,000 sats' },
+          { title: '👑 Full Goal', amount: '1.0', sub: '100,000,000 sats' }
+        ]
+      },
+      ETH: {
+        id: 'ETH',
+        name: 'Ethereum',
+        symbol: 'ETH',
+        icon: 'Ξ',
+        address: '0xcF5a2FBB514d8410398534E4feaA33aa57b3c006',
+        badge: 'Ethereum Mainnet & EVM L2 (Base • Arbitrum • Optimism)',
+        headline: 'Road to 10.00 ETH (Ξ)',
+        subtext: 'Accepts ETH, USDT & USDC on Ethereum Mainnet as well as low-fee L2 networks (Base, Arbitrum, Optimism).',
+        goal: 10.0,
+        defaultAmount: '0.02',
+        gradClass: 'grad-eth',
+        accentText: 'text-indigo-400',
+        borderActive: 'border-indigo-500 bg-indigo-500/10',
+        explorerName: 'etherscan.io ↗',
+        explorerUrl: 'https://etherscan.io/address/0xcF5a2FBB514d8410398534E4feaA33aa57b3c006',
+        qrTitle: 'EIP-681 Ethereum Payment QR',
+        qrSubtitle: 'Scan with MetaMask, Trust Wallet, Coinbase Wallet, Rainbow, or Rabby',
+        protocolTag: 'ethereum:',
+        primaryBtnText: '📱 MetaMask Deep Link',
+        web3BtnText: '🦊 Send via Browser Wallet',
+        guide1: ['1. Direct Web3 Send', 'Click "Send via Browser Wallet" to trigger MetaMask, Rabby, or Coinbase extension.'],
+        guide2: ['2. ERC-20 Stablecoins', 'Also accepts USDT, USDC, and DAI on Ethereum Mainnet at the exact same 0x address.'],
+        guide3: ['3. Low-Gas L2 Support', 'Send ETH or USDC via Base, Arbitrum, Optimism, or Polygon to save on gas fees.'],
+        tiers: [
+          { title: '☕ Gas & Coffee', amount: '0.005', sub: 'Micro ETH drop' },
+          { title: '⚡ Booster (Popular)', amount: '0.02', sub: '0.2% of Goal' },
+          { title: '🚀 Web3 Builder', amount: '0.05', sub: '0.5% of Goal' },
+          { title: '💎 1% of Goal', amount: '0.1', sub: '0.10 ETH' },
+          { title: '🐋 ETH Whale', amount: '0.5', sub: '0.50 ETH' },
+          { title: '👑 Validator Step', amount: '1.0', sub: '1.00 ETH' }
+        ]
+      },
+      SOL: {
+        id: 'SOL',
+        name: 'Solana',
+        symbol: 'SOL',
+        icon: '◎',
+        address: '9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d',
+        badge: 'Solana Mainnet-Beta • Sub-Second Finality & $0.0002 Fees',
+        headline: 'Road to 100.00 SOL (◎)',
+        subtext: 'Lightning-fast transfers via Solana Pay, Phantom, Solflare, or Backpack. Supports native SOL and SPL USDC.',
+        goal: 100.0,
+        defaultAmount: '0.2',
+        gradClass: 'grad-sol',
+        accentText: 'text-emerald-400',
+        borderActive: 'border-emerald-400 bg-emerald-500/10',
+        explorerName: 'solscan.io ↗',
+        explorerUrl: 'https://solscan.io/account/9sWSw56L9rK1HEyLivbJHAHY6sv15cWx2whRjx7f2L3d',
+        qrTitle: 'Solana Pay Official QR Code',
+        qrSubtitle: 'Scan with Phantom, Solflare, Backpack, Trust Wallet, or Glow',
+        protocolTag: 'solana:',
+        primaryBtnText: '◎ Open in Solana Wallet',
+        web3BtnText: '👻 Connect Phantom / Solscan',
+        guide1: ['1. Solana Pay Ready', 'Scan the QR code with Phantom or Solflare to pre-fill recipient, SOL amount, and memo.'],
+        guide2: ['2. SPL USDC & Tokens', 'This address (9sWSw...f2L3d) also accepts SPL USDC, USDT, JUP, BONK, and RAY.'],
+        guide3: ['3. Near-Zero Fees', 'Solana transactions confirm in 400ms and cost less than a fraction of a cent.'],
+        tiers: [
+          { title: '☕ Espresso Tip', amount: '0.05', sub: '50,000,000 lamports' },
+          { title: '⚡ Booster (Popular)', amount: '0.2', sub: '0.20 SOL' },
+          { title: '🚀 SOL Builder', amount: '0.5', sub: '0.50 SOL' },
+          { title: '💎 1% of Goal', amount: '1.0', sub: '1.00 SOL' },
+          { title: '🐋 Solana Whale', amount: '5.0', sub: '5.00 SOL' },
+          { title: '👑 Mega Patron', amount: '10.0', sub: '10.00 SOL' }
+        ]
+      },
+      GRAM: {
+        id: 'GRAM',
+        name: 'GRAM / TON',
+        symbol: 'GRAM',
+        icon: '💎',
+        address: 'UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3',
+        badge: 'The Open Network (TON Mainnet) • GRAM Jetton & Toncoin',
+        headline: 'Road to 1,000,000 GRAM (💎)',
+        subtext: 'Instant transfers via Tonkeeper, MyTonWallet, or Telegram @wallet. Supports both GRAM (Jetton) and native TON.',
+        goal: 1000000,
+        defaultAmount: '1000',
+        gradClass: 'grad-gram',
+        accentText: 'text-sky-400',
+        borderActive: 'border-sky-400 bg-sky-500/10',
+        explorerName: 'tonviewer.com ↗',
+        explorerUrl: 'https://tonviewer.com/UQD98XbxBWO2vYZi1U-jmiYdIPYjGjk681yDkBIZ1Z-Vckq3',
+        qrTitle: 'Tonkeeper / TON Transfer QR',
+        qrSubtitle: 'Scan with Tonkeeper, MyTonWallet, Tonhub, or Telegram camera',
+        protocolTag: 'ton://',
+        primaryBtnText: '💎 Open in Tonkeeper',
+        web3BtnText: '⚡ Open TON URI',
+        guide1: ['1. 1-Click Tonkeeper', 'Click "Open in Tonkeeper" — the GRAM Jetton contract, amount, and comment are pre-filled.'],
+        guide2: ['2. Telegram @wallet', 'Send GRAM or native TON directly inside Telegram using @wallet or MyTonWallet.'],
+        guide3: ['3. Switch GRAM / TON', 'Use the toggle above the tiers to switch the payment link between GRAM Jetton and native TON.'],
+        tiers: [
+          { title: '☕ Micro Boost', amount: '100', sub: 'Starter drop' },
+          { title: '⚡ Popular Tier', amount: '1000', sub: '0.1% of Goal' },
+          { title: '🚀 Supporter', amount: '5000', sub: '0.5% of Goal' },
+          { title: '💎 1% Club', amount: '10000', sub: '1.0% of Goal' },
+          { title: '🐋 TON Whale', amount: '50000', sub: '5.0% of Goal' },
+          { title: '👑 Mega Patron', amount: '100000', sub: '10% of Goal' }
+        ]
+      }
+    };
+
+    let state = {
+      activeChain: 'BTC',
+      tonSubAsset: 'GRAM', // 'GRAM' or 'TON'
+      selectedAmount: '0.001',
+      memo: '',
+      prices: {
+        BTC: 68500,
+        ETH: 2650,
+        SOL: 175,
+        GRAM: 0.0035,
+        TON: 5.20
+      },
+      balances: {
+        BTC: 0,
+        ETH: 0,
+        SOL: 0,
+        GRAM: 0,
+        TON: 0
+      },
+      supporters: [
+        { name: 'Multi-Chain Hub Live', amount: 'BTC • ETH • SOL • GRAM', time: 'Verified On-Chain', verified: true },
+        { name: 'Solana & TON Added', amount: '4 Networks Ready', time: 'Mainnet', verified: true }
+      ]
+    };
+
+    function loadSavedState() {
+      try {
+        const saved = localStorage.getItem('multichain_hub_state_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed.supporters)) state.supporters = parsed.supporters;
+        }
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    function saveCustomState() {
+      try {
+        localStorage.setItem('multichain_hub_state_v1', JSON.stringify({
+          supporters: state.supporters
+        }));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-msg');
+      msgEl.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      if (window._toastTimer) clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2800);
+    }
+
+    function copyTextToClipboard(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => {
+          fallbackCopy(text, successMsg);
+        });
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (err) {
+        showToast('Copy manually: ' + text);
+      }
+      document.body.removeChild(ta);
+    }
+
+    function buildActiveUri() {
+      const c = CHAINS[state.activeChain];
+      const amt = parseFloat(state.selectedAmount);
+      const validAmt = !isNaN(amt) && amt > 0;
+      const memo = state.memo.trim();
+
+      if (state.activeChain === 'BTC') {
+        const p = [];
+        if (validAmt) p.push('amount=' + amt);
+        if (memo) p.push('message=' + encodeURIComponent(memo));
+        const uri = 'bitcoin:' + c.address + (p.length ? '?' + p.join('&') : '');
+        return { qrUri: uri, primaryHref: uri, protocol: 'bitcoin:' };
+      }
+
+      if (state.activeChain === 'ETH') {
+        let weiStr = '';
+        if (validAmt) {
+          const weiBig = BigInt(Math.round(amt * 1e9)) * BigInt(1e9);
+          weiStr = weiBig.toString();
+        }
+        const query = weiStr ? '?value=' + weiStr : '';
+        return {
+          qrUri: 'ethereum:' + c.address + '@1' + query,
+          primaryHref: 'https://metamask.app.link/send/' + c.address + '@1' + query,
+          protocol: 'ethereum:'
+        };
+      }
+
+      if (state.activeChain === 'SOL') {
+        const p = [];
+        if (validAmt) p.push('amount=' + amt);
+        p.push('label=' + encodeURIComponent('Road to 100 SOL'));
+        if (memo) p.push('message=' + encodeURIComponent(memo));
+        const uri = 'solana:' + c.address + '?' + p.join('&');
+        return { qrUri: uri, primaryHref: uri, protocol: 'solana:' };
+      }
+
+      // GRAM / TON
+      const p = [];
+      if (state.tonSubAsset === 'GRAM') {
+        p.push('jetton=' + GRAM_JETTON_MASTER);
+      }
+      if (validAmt) {
+        p.push('amount=' + Math.round(amt * 1e9).toString());
+      }
+      if (memo) {
+        p.push('text=' + encodeURIComponent(memo));
+      }
+      const q = p.length ? '?' + p.join('&') : '';
+      return {
+        qrUri: 'https://app.tonkeeper.com/transfer/' + c.address + q,
+        primaryHref: 'https://app.tonkeeper.com/transfer/' + c.address + q,
+        tonNativeUri: 'ton://transfer/' + c.address + q,
+        protocol: state.tonSubAsset === 'GRAM' ? 'Tonkeeper Jetton' : 'ton://transfer'
+      };
+    }
+
+    function selectChain(chainKey) {
+      state.activeChain = chainKey;
+      const c = CHAINS[chainKey];
+      state.selectedAmount = c.defaultAmount;
+      document.getElementById('input-custom-amount').value = c.defaultAmount;
+
+      // Update selector cards visual state
+      Object.keys(CHAINS).forEach((k) => {
+        const btn = document.getElementById('chain-card-' + k);
+        if (k === chainKey) {
+          btn.className = 'chain-selector-btn text-left p-3.5 rounded-2xl border-2 ' + CHAINS[k].borderActive + ' transition-all flex items-center justify-between shadow-lg';
+        } else {
+          btn.className = 'chain-selector-btn text-left p-3.5 rounded-2xl border border-white/10 bg-slate-900/70 hover:border-white/30 transition-all flex items-center justify-between';
+        }
+      });
+
+      // Header icon & theme accents
+      const logo = document.getElementById('header-logo');
+      logo.className = 'w-10 h-10 rounded-xl ' + c.gradClass + ' flex items-center justify-center shadow-lg font-extrabold text-xl ' + (chainKey === 'SOL' ? 'text-slate-950' : 'text-white') + ' transition-all';
+      logo.textContent = c.icon;
+
+      // Top banner
+      const badgeEl = document.getElementById('active-chain-badge');
+      badgeEl.className = 'text-xs uppercase tracking-wider font-semibold ' + c.accentText;
+      badgeEl.textContent = c.badge;
+
+      document.getElementById('active-chain-headline').textContent = c.headline;
+      document.getElementById('active-chain-subtext').textContent = c.subtext;
+      document.getElementById('goal-progress-bar').className = c.gradClass + ' h-full rounded-full transition-all duration-700';
+
+      const expLink = document.getElementById('explorer-link');
+      expLink.href = c.explorerUrl;
+      expLink.textContent = c.explorerName;
+      expLink.className = c.accentText + ' hover:underline font-mono';
+
+      // Show/hide TON subtoggle
+      const tonSub = document.getElementById('ton-subtoggle');
+      if (chainKey === 'GRAM') {
+        tonSub.classList.remove('hidden');
+        tonSub.classList.add('flex');
+      } else {
+        tonSub.classList.add('hidden');
+        tonSub.classList.remove('flex');
+      }
+
+      const activeUnit = (chainKey === 'GRAM') ? state.tonSubAsset : c.symbol;
+      document.getElementById('step-title').textContent = 'Select Contribution Amount (' + activeUnit + ')';
+      document.getElementById('custom-amount-label').textContent = 'Custom Amount (' + activeUnit + ')';
+      document.getElementById('address-network-label').textContent = 'Recipient Address (' + c.name + ')';
+      document.getElementById('active-address-code').textContent = c.address;
+
+      const copyBtn = document.getElementById('copy-address-btn');
+      copyBtn.className = c.gradClass + ' hover:opacity-95 ' + (chainKey === 'SOL' ? 'text-slate-950 font-bold' : 'text-white font-semibold') + ' text-xs sm:text-sm px-4 py-2.5 rounded-lg transition shadow-lg shrink-0';
+
+      document.getElementById('primary-wallet-btn-text').textContent = c.primaryBtnText;
+      document.getElementById('web3-browser-btn-text').textContent = c.web3BtnText;
+
+      // Guides
+      document.getElementById('guide-1-title').textContent = c.guide1[0];
+      document.getElementById('guide-1-title').className = 'font-bold mb-1 ' + c.accentText;
+      document.getElementById('guide-1-body').textContent = c.guide1[1];
+
+      document.getElementById('guide-2-title').textContent = c.guide2[0];
+      document.getElementById('guide-2-title').className = 'font-bold mb-1 ' + c.accentText;
+      document.getElementById('guide-2-body').textContent = c.guide2[1];
+
+      document.getElementById('guide-3-title').textContent = c.guide3[0];
+      document.getElementById('guide-3-title').className = 'font-bold mb-1 ' + c.accentText;
+      document.getElementById('guide-3-body').textContent = c.guide3[1];
+
+      // QR labels
+      const qrTitle = document.getElementById('qr-title-badge');
+      qrTitle.textContent = c.qrTitle;
+      qrTitle.className = 'text-xs font-semibold uppercase tracking-wider mb-1 ' + c.accentText;
+      document.getElementById('qr-subtitle-text').textContent = c.qrSubtitle;
+
+      renderTiers();
+      updateActiveBannerBalance();
+      renderQrAndUri();
+    }
+
+    function renderTiers() {
+      const c = CHAINS[state.activeChain];
+      const unit = (state.activeChain === 'GRAM') ? state.tonSubAsset : c.symbol;
+      const tiers = (state.activeChain === 'GRAM' && state.tonSubAsset === 'TON')
+        ? [
+            { title: '☕ Coffee Tip', amount: '1', sub: '1.00 TON' },
+            { title: '⚡ Booster', amount: '5', sub: '5.00 TON' },
+            { title: '🚀 Supporter', amount: '10', sub: '10.00 TON' },
+            { title: '💎 Contributor', amount: '25', sub: '25.00 TON' },
+            { title: '🐋 TON Whale', amount: '100', sub: '100.00 TON' },
+            { title: '👑 Legend', amount: '500', sub: '500.00 TON' }
+          ]
+        : c.tiers;
+
+      const btns = document.querySelectorAll('.tier-btn');
+      btns.forEach((btn, idx) => {
+        const t = tiers[idx];
+        if (!t) return;
+        btn.setAttribute('data-amount', t.amount);
+        const isSelected = String(state.selectedAmount) === String(t.amount);
+        btn.className = isSelected
+          ? 'tier-btn text-left p-3 rounded-xl border-2 ' + c.borderActive + ' transition'
+          : 'tier-btn text-left p-3 rounded-xl border border-white/10 bg-slate-900/60 hover:border-white/30 transition';
+        btn.innerHTML = `
+          <div class="text-xs text-slate-300">${escapeHtml(t.title)}</div>
+          <div class="font-mono font-bold text-sm text-white mt-0.5">${Number(t.amount).toLocaleString('en-US', { maximumFractionDigits: 6 })} ${unit}</div>
+          <div class="text-[11px] ${c.accentText} font-mono">${escapeHtml(t.sub)}</div>
+        `;
+      });
+    }
+
+    function renderQrAndUri() {
+      const built = buildActiveUri();
+      const c = CHAINS[state.activeChain];
+      const unit = (state.activeChain === 'GRAM') ? state.tonSubAsset : c.symbol;
+
+      document.getElementById('uri-preview-box').textContent = built.qrUri;
+      document.getElementById('uri-protocol-tag').textContent = built.protocol;
+      document.getElementById('uri-protocol-tag').className = 'font-mono ' + c.accentText;
+      document.getElementById('primary-wallet-link').setAttribute('href', built.primaryHref);
+
+      const amt = parseFloat(state.selectedAmount) || 0;
+      const unitPrice = state.prices[unit] || 0;
+      const usdVal = amt * unitPrice;
+      document.getElementById('usd-estimate-badge').textContent = usdVal > 0
+        ? '~' + usdVal.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
+        : unit;
+
+      const qrBox = document.getElementById('qrcode-box');
+      qrBox.innerHTML = '';
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrBox, {
+          text: built.qrUri,
+          width: 176,
+          height: 176,
+          colorDark: '#060913',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        qrBox.innerHTML = '<div class="text-xs text-slate-900 font-mono p-2 break-all">' + c.address + '</div>';
+      }
+    }
+
+    function updateActiveBannerBalance() {
+      const key = state.activeChain;
+      const c = CHAINS[key];
+      const bal = state.balances[key] || 0;
+      const pct = Math.min(100, (bal / c.goal) * 100);
+
+      document.getElementById('active-balance-label').textContent = 'Current ' + c.symbol + ' Balance';
+      const valEl = document.getElementById('active-balance-value');
+      valEl.className = 'font-mono font-bold text-lg sm:text-xl ' + c.accentText;
+
+      if (key === 'BTC') {
+        valEl.textContent = bal.toFixed(8) + ' BTC';
+        const usd = bal * state.prices.BTC;
+        document.getElementById('active-balance-sub').textContent = '(~$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ')';
+        document.getElementById('market-price-display').textContent = 'BTC $' + state.prices.BTC.toLocaleString('en-US');
+        document.getElementById('goal-target-text').textContent = '1.00 BTC';
+      } else if (key === 'ETH') {
+        valEl.textContent = bal.toFixed(6) + ' ETH';
+        const usd = bal * state.prices.ETH;
+        document.getElementById('active-balance-sub').textContent = '(~$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ')';
+        document.getElementById('market-price-display').textContent = 'ETH $' + state.prices.ETH.toLocaleString('en-US');
+        document.getElementById('goal-target-text').textContent = '10.00 ETH';
+      } else if (key === 'SOL') {
+        valEl.textContent = bal.toFixed(4) + ' SOL';
+        const usd = bal * state.prices.SOL;
+        document.getElementById('active-balance-sub').textContent = '(~$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ')';
+        document.getElementById('market-price-display').textContent = 'SOL $' + state.prices.SOL.toLocaleString('en-US');
+        document.getElementById('goal-target-text').textContent = '100.00 SOL';
+      } else {
+        valEl.textContent = bal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' GRAM';
+        document.getElementById('active-balance-sub').textContent = '(+ ' + state.balances.TON.toFixed(2) + ' TON)';
+        document.getElementById('market-price-display').textContent = 'TON $' + state.prices.TON.toFixed(2);
+        document.getElementById('goal-target-text').textContent = '1,000,000 GRAM';
+      }
+
+      document.getElementById('progress-percent').textContent = pct.toFixed(4) + '%';
+      document.getElementById('goal-progress-bar').style.width = Math.max(1, pct) + '%';
+
+      // Update mini balances on top cards
+      document.getElementById('mini-bal-BTC').textContent = state.balances.BTC.toFixed(6) + ' BTC';
+      document.getElementById('mini-bal-ETH').textContent = state.balances.ETH.toFixed(4) + ' ETH';
+      document.getElementById('mini-bal-SOL').textContent = state.balances.SOL.toFixed(4) + ' SOL';
+      document.getElementById('mini-bal-GRAM').textContent = state.balances.GRAM.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' GRAM';
+    }
+
+    async function fetchAllChainsData() {
+      const statusEl = document.getElementById('api-status-text');
+      statusEl.textContent = '(syncing 4 blockchains...)';
+
+      // 1. Prices (CoinGecko)
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,the-open-network&vs_currencies=usd')
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => {
+          if (!d) return;
+          if (d.bitcoin && d.bitcoin.usd) state.prices.BTC = Number(d.bitcoin.usd);
+          if (d.ethereum && d.ethereum.usd) state.prices.ETH = Number(d.ethereum.usd);
+          if (d.solana && d.solana.usd) state.prices.SOL = Number(d.solana.usd);
+          if (d['the-open-network'] && d['the-open-network'].usd) state.prices.TON = Number(d['the-open-network'].usd);
+          updateActiveBannerBalance();
+          renderQrAndUri();
+        })
+        .catch(() => {});
+
+      // 2. Bitcoin (mempool.space)
+      fetch('https://mempool.space/api/address/' + CHAINS.BTC.address)
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => {
+          if (!d || !d.chain_stats) return;
+          const funded = (d.chain_stats.funded_txo_sum || 0) + (d.mempool_stats ? d.mempool_stats.funded_txo_sum || 0 : 0);
+          const spent = (d.chain_stats.spent_txo_sum || 0) + (d.mempool_stats ? d.mempool_stats.spent_txo_sum || 0 : 0);
+          state.balances.BTC = Math.max(0, funded - spent) / 1e8;
+          updateActiveBannerBalance();
+        })
+        .catch(() => {});
+
+      // 3. Ethereum (Public RPC)
+      fetch('https://eth.llamarpc.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_getBalance', params: [CHAINS.ETH.address, 'latest'], id: 1 })
+      })
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => {
+          if (d && d.result) {
+            state.balances.ETH = Number(BigInt(d.result)) / 1e18;
+            updateActiveBannerBalance();
+          }
+        })
+        .catch(() => {});
+
+      // 4. Solana (Public Mainnet RPC)
+      fetch('https://api.mainnet-beta.solana.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [CHAINS.SOL.address] })
+      })
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => {
+          if (d && d.result && typeof d.result.value !== 'undefined') {
+            state.balances.SOL = Number(d.result.value) / 1e9;
+            updateActiveBannerBalance();
+          }
+        })
+        .catch(() => {});
+
+      // 5. TON & GRAM (tonapi.io)
+      Promise.allSettled([
+        fetch('https://tonapi.io/v2/accounts/' + encodeURIComponent(CHAINS.GRAM.address)),
+        fetch('https://tonapi.io/v2/accounts/' + encodeURIComponent(CHAINS.GRAM.address) + '/jettons')
+      ]).then(([acctRes, jetRes]) => {
+        if (acctRes.status === 'fulfilled' && acctRes.value.ok) {
+          acctRes.value.json().then((acct) => {
+            if (typeof acct.balance !== 'undefined') {
+              state.balances.TON = Number(acct.balance) / 1e9;
+              updateActiveBannerBalance();
+            }
+          }).catch(() => {});
+        }
+        if (jetRes.status === 'fulfilled' && jetRes.value.ok) {
+          jetRes.value.json().then((jets) => {
+            if (jets && Array.isArray(jets.balances)) {
+              const g = jets.balances.find((b) => b.jetton && b.jetton.symbol && b.jetton.symbol.toUpperCase() === 'GRAM');
+              if (g && g.balance) {
+                const dec = (g.jetton && g.jetton.decimals) ? Number(g.jetton.decimals) : 9;
+                state.balances.GRAM = Number(g.balance) / Math.pow(10, dec);
+                updateActiveBannerBalance();
+              }
+            }
+          }).catch(() => {});
+        }
+        statusEl.textContent = '(all 4 chains synced ✓)';
+      });
+    }
+
+    async function handleSecondaryWeb3Action() {
+      const key = state.activeChain;
+      const c = CHAINS[key];
+
+      if (key === 'ETH') {
+        if (typeof window.ethereum !== 'undefined') {
+          try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const amt = parseFloat(state.selectedAmount) || 0.02;
+            const weiBig = BigInt(Math.round(amt * 1e9)) * BigInt(1e9);
+            const txHash = await window.ethereum.request({
+              method: 'eth_sendTransaction',
+              params: [{ from: accounts[0], to: c.address, value: '0x' + weiBig.toString(16) }]
+            });
+            showToast('ETH transaction sent! ' + String(txHash).slice(0, 10) + '...');
+            return;
+          } catch (err) {
+            showToast(err && err.message ? err.message : 'MetaMask cancelled');
+            return;
+          }
+        }
+        window.open(c.explorerUrl, '_blank');
+        return;
+      }
+
+      if (key === 'SOL') {
+        const provider = window.solana || (window.phantom && window.phantom.solana);
+        if (provider && provider.isPhantom) {
+          try {
+            await provider.connect();
+            showToast('Phantom connected! Scan QR or copy ' + c.address.slice(0, 8) + '... to send SOL.');
+            copyTextToClipboard(c.address, 'Solana address copied for Phantom!');
+            return;
+          } catch (e) {
+            // Fall through to Solscan
+          }
+        }
+        window.open(c.explorerUrl, '_blank');
+        return;
+      }
+
+      if (key === 'GRAM') {
+        const built = buildActiveUri();
+        window.location.href = built.tonNativeUri || built.primaryHref;
+        return;
+      }
+
+      window.open(c.explorerUrl, '_blank');
+    }
+
+    function renderSupporters() {
+      const container = document.getElementById('supporters-list');
+      container.innerHTML = '';
+      state.supporters.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-white/5';
+        const badgeColor = item.verified ? 'text-emerald-400' : 'text-amber-300';
+        row.innerHTML = `
+          <div class="truncate pr-2">
+            <div class="font-semibold text-white truncate">${escapeHtml(item.name)}</div>
+            <div class="text-[11px] text-slate-400">${escapeHtml(item.time)}</div>
+          </div>
+          <div class="font-mono font-bold ${badgeColor} shrink-0">${escapeHtml(item.amount)}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function switchMainView(viewName) {
+      const views = ['widget', 'directory', 'promo'];
+      views.forEach((v) => {
+        const el = document.getElementById('view-' + v);
+        const btn = document.getElementById('tab-btn-' + v);
+        if (v === viewName) {
+          el.classList.remove('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg font-semibold transition-all bg-white text-slate-950 shadow';
+        } else {
+          el.classList.add('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white';
+        }
+      });
+    }
+
+    function initShareLinks() {
+      const shareText = encodeURIComponent(
+        '⚡ Open Multi-Chain Crypto Crowdfund (BTC • ETH • SOL • GRAM/TON)!\n' +
+        'Live Tracker & QR Hub: ' + LIVE_SITE_URL + '\n\n' +
+        '₿ BTC: ' + CHAINS.BTC.address + '\n' +
+        'Ξ ETH: ' + CHAINS.ETH.address + '\n' +
+        '◎ SOL: ' + CHAINS.SOL.address + '\n' +
+        '💎 GRAM/TON: ' + CHAINS.GRAM.address
+      );
+      document.getElementById('share-tg-link').href = 'https://t.me/share/url?url=' + encodeURIComponent(LIVE_SITE_URL) + '&text=' + shareText;
+      document.getElementById('share-x-link').href = 'https://twitter.com/intent/tweet?text=' + shareText;
+      document.getElementById('share-reddit-link').href = 'https://www.reddit.com/submit?url=' + encodeURIComponent(LIVE_SITE_URL) + '&title=' + encodeURIComponent('Open Multi-Chain Crypto Crowdfund Experiment — BTC, ETH, SOL, GRAM/TON');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderSupporters();
+      initShareLinks();
+      selectChain('BTC');
+      fetchAllChainsData();
+
+      // Top View Tabs
+      document.getElementById('tab-btn-widget').addEventListener('click', () => switchMainView('widget'));
+      document.getElementById('tab-btn-directory').addEventListener('click', () => switchMainView('directory'));
+      document.getElementById('tab-btn-promo').addEventListener('click', () => switchMainView('promo'));
+
+      // Chain Selector Cards
+      document.querySelectorAll('.chain-selector-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const ch = btn.getAttribute('data-chain');
+          selectChain(ch);
+          switchMainView('widget');
+        });
+      });
+
+      // TON Sub-asset toggle (GRAM vs TON)
+      document.getElementById('subbtn-gram').addEventListener('click', () => {
+        state.tonSubAsset = 'GRAM';
+        state.selectedAmount = '1000';
+        document.getElementById('input-custom-amount').value = '1000';
+        document.getElementById('subbtn-gram').className = 'px-2.5 py-1 rounded-lg font-bold bg-[#0098EA] text-white transition';
+        document.getElementById('subbtn-ton').className = 'px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition';
+        document.getElementById('step-title').textContent = 'Select Contribution Amount (GRAM)';
+        document.getElementById('custom-amount-label').textContent = 'Custom Amount (GRAM)';
+        renderTiers();
+        renderQrAndUri();
+      });
+
+      document.getElementById('subbtn-ton').addEventListener('click', () => {
+        state.tonSubAsset = 'TON';
+        state.selectedAmount = '5';
+        document.getElementById('input-custom-amount').value = '5';
+        document.getElementById('subbtn-ton').className = 'px-2.5 py-1 rounded-lg font-bold bg-[#0098EA] text-white transition';
+        document.getElementById('subbtn-gram').className = 'px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition';
+        document.getElementById('step-title').textContent = 'Select Contribution Amount (TON)';
+        document.getElementById('custom-amount-label').textContent = 'Custom Amount (TON)';
+        renderTiers();
+        renderQrAndUri();
+      });
+
+      // Preset tier buttons
+      document.querySelectorAll('.tier-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const amt = btn.getAttribute('data-amount');
+          state.selectedAmount = amt;
+          document.getElementById('input-custom-amount').value = amt;
+          renderTiers();
+          renderQrAndUri();
+        });
+      });
+
+      // Custom amount & memo inputs
+      document.getElementById('input-custom-amount').addEventListener('input', (e) => {
+        state.selectedAmount = e.target.value;
+        renderTiers();
+        renderQrAndUri();
+      });
+
+      document.getElementById('input-donor-memo').addEventListener('input', (e) => {
+        state.memo = e.target.value;
+        renderQrAndUri();
+      });
+
+      // Copy & Web3 buttons
+      document.getElementById('copy-address-btn').addEventListener('click', () => {
+        const c = CHAINS[state.activeChain];
+        copyTextToClipboard(c.address, c.name + ' address copied!');
+      });
+
+      document.getElementById('copy-uri-btn').addEventListener('click', () => {
+        copyTextToClipboard(buildActiveUri().qrUri, 'Payment URI copied!');
+      });
+
+      document.getElementById('web3-browser-btn').addEventListener('click', handleSecondaryWeb3Action);
+
+      document.getElementById('refresh-balance-btn').addEventListener('click', () => {
+        fetchAllChainsData();
+        showToast('Syncing live balances across all 4 chains...');
+      });
+
+      document.getElementById('refresh-all-btn').addEventListener('click', () => {
+        fetchAllChainsData();
+        showToast('Syncing BTC, ETH, SOL, and TON/GRAM...');
+      });
+
+      // Supporter pledge wall
+      document.getElementById('add-pledge-btn').addEventListener('click', () => {
+        const nameInput = document.getElementById('supporter-name-input');
+        const name = nameInput.value.trim() || 'Anonymous Supporter';
+        const c = CHAINS[state.activeChain];
+        const unit = (state.activeChain === 'GRAM') ? state.tonSubAsset : c.symbol;
+        const amt = parseFloat(state.selectedAmount) || c.defaultAmount;
+        state.supporters.unshift({
+          name: name,
+          amount: '+' + amt + ' ' + unit,
+          time: 'Just now • ' + c.name,
+          verified: false
+        });
+        nameInput.value = '';
+        renderSupporters();
+        saveCustomState();
+        fetchAllChainsData();
+        showToast('Thank you! Your ' + unit + ' pledge was added.');
+      });
+
+      // Directory view buttons
+      document.querySelectorAll('.dir-copy-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const addr = btn.getAttribute('data-raw-copy');
+          const label = btn.getAttribute('data-label');
+          copyTextToClipboard(addr, label + ' address copied!');
+        });
+      });
+
+      document.querySelectorAll('.dir-open-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const ch = btn.getAttribute('data-select-chain');
+          selectChain(ch);
+          switchMainView('widget');
+        });
+      });
+
+      // Copy viral post templates
+      document.querySelectorAll('.copy-tpl-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-copy-target');
+          const text = document.getElementById(targetId).textContent;
+          copyTextToClipboard(text, 'Multi-chain post copied to clipboard!');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
